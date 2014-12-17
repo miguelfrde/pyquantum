@@ -7,6 +7,8 @@ from pyquantum.qubit import q0, q1, Qubit
 from pyquantum.qcircuit import QuantumCircuit
 from pyquantum.qgate import H, X, Z
 
+# Creates a phase shit circuit for f(x) = 1 where
+# x is an n bit number
 def gen_oracle(x, n):
     binary = bin(x)[2:]
     binary = '0' * (n - len(binary)) + binary
@@ -18,6 +20,8 @@ def gen_oracle(x, n):
     circ.add_controlled_gate(1, n, X)
     return circ
 
+# Generates an inversion about the mean circuit for n
+# qubits
 def inv_about_mean(n):
     circ = QuantumCircuit(n+1, 5)
     for row in range(n):
@@ -28,6 +32,8 @@ def inv_about_mean(n):
     circ.add_controlled_gate(2, n-1, Z)
     return circ
 
+# Runs the grover algorithm given an oracle on n qubits
+# Plots the result after each iteration
 def grover(oracle, n, plot=False):
     initial = Qubit.to_register([q0] * n + [q1])
     circ = QuantumCircuit(n + 1, 1)
@@ -44,6 +50,8 @@ def grover(oracle, n, plot=False):
         grover_plot(result, iters, iters)    
     return result
 
+# Helper function to perform the plot given the result at some iteration
+# out of a total number of iterations
 def grover_plot(result, iteration, total):
     results = [grover_measure(result.vector, x) for x in range(2 ** n)]
     fig = plt.figure()
@@ -58,6 +66,7 @@ def grover_plot(result, iteration, total):
     plt.pause(2)
     plt.close(fig)
 
+# Measures the result of a grover result qubit register for a number v
 def grover_measure(register, v):
     a = register[2*v] * np.conjugate(register[2*v])
     b = register[2*v + 1] * np.conjugate(register[2*v + 1])
