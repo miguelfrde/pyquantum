@@ -46,6 +46,7 @@ def grover(oracle, n, plot=False):
             grover_plot(circ.asgate().of(initial), i, iters)
         circ = circ.concat(oracle).concat(inv_about_mean(n))
     result = circ.asgate().of(initial)
+    print(circ)
     if plot:
         grover_plot(result, iters, iters)    
     return result
