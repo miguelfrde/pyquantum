@@ -1,5 +1,5 @@
 from functools import reduce
-from pyquantum.qgate import QGate, X, I
+from pyquantum.qgate import QGate, X, I, P0, P1
 import numpy as np
 
 # Used by QuantumCircuit to handle gates controlled by gates on a position
@@ -72,12 +72,30 @@ class QuantumCircuit:
             return QGate.tensor_of_gates(col)
         gates = map(column_gate, self.circuit)
         return reduce(np.dot, reversed(list(gates)))
+    
+    def __str__(self):
+        gates_by_row = np.transpose(self.circuit)
+        result = ''
+        for r, row in enumerate(gates_by_row):
+            result += '---'
+            for c, gate in enumerate(row):
+                if self.__has_controlled_gate(self.circuit[c, r+1:]):
+                    result += 'o---'
+                else:
+                    g = str(gate)[1:] if isinstance(gate, ControlledQGate) else str(gate)
+                    result += g + '-'*(4 - len(g)) if gate != I else '----'
+            if r != len(gates_by_row) - 1:
+                result += '\n---'
+                for c, gate in enumerate(row):
+                    if self.__has_controlled_gate(self.circuit[c, r+1:]):
+                        result += '|---'
+                    else:
+                        result += '----'
+            result += '\n'
+        return result
 
-#    def __str__(self):
-#        # TODO
-#        return ""
+    __repr__ = __str__
 
-#    __repr__ = __str__
 
 # Private function that creates a CNOT gate
 def __gen_cnot():
